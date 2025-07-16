@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SeatLayout {
+  id         String @id @default(uuid())
+  name       String
+  location   String
+  canvasSize String
+  seats      Seat[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Seat {
+  id       String     @id @default(uuid())
+  seatName String     @unique
+  seatX    Int
+  seatY    Int
+  layout   SeatLayout @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  layoutId String
+  module   SeatModule @relation(fields: [moduleId], references: [id])
+  moduleId Int     @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SeatModule {
+  id          Int   @id
+  occupied    Boolean  @default(false)
+  lastUpdated DateTime @default(now())
+  seat        Seat?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SeatModuleStatus {
+  id           String   @id
+  batteryLevel Int
+  voltage      Float
+  uptimeSec    Int
+  lastSeen     DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
